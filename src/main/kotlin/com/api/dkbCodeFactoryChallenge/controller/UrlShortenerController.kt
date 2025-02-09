@@ -3,6 +3,7 @@ package com.api.dkbCodeFactoryChallenge.controller
 import com.api.dkbCodeFactoryChallenge.model.request.ShortenerRequest
 import com.api.dkbCodeFactoryChallenge.model.request.ShortenerResponse
 import com.api.dkbCodeFactoryChallenge.service.UrlShortenerService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,7 +19,7 @@ import java.net.URI
 class UrlShortenerController(private val urlShortenerService: UrlShortenerService) {
 
     @PostMapping("/shorten")
-    fun shortenUrl(@RequestBody request: ShortenerRequest): ResponseEntity<ShortenerResponse> {
+    fun shortenUrl(@Valid @RequestBody request: ShortenerRequest): ResponseEntity<ShortenerResponse> {
         val shortUrl = urlShortenerService.shortenUrl(request.url)
         return ResponseEntity.ok(ShortenerResponse(shortUrl))
     }
