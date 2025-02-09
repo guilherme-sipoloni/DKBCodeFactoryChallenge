@@ -13,7 +13,7 @@ class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMap
 
         urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrl))
 
-        return "http://localhost:8080/$shortCode"
+        return "http://localhost:8080/api/$shortCode"
     }
 
     fun getOriginalUrl(shortCode: String): String {
