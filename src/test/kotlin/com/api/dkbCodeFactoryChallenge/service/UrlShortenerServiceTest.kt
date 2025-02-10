@@ -10,6 +10,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.springframework.web.bind.MethodArgumentNotValidException
 
 class UrlShortenerServiceTest {
 
@@ -17,7 +18,7 @@ class UrlShortenerServiceTest {
     private val urlShortenerService = UrlShortenerService(urlMappingRepository)
 
     @Test
-    fun `shortenUrl should generate a short code and save in mapping table`() {
+    fun `should generate a short url and save short code in mapping table`() {
         val originalUrl = "https://test.com"
         every { urlMappingRepository.save(any()) } returns UrlShortedMapping(shortCode = "abc123", originalUrl = originalUrl)
 
@@ -27,7 +28,7 @@ class UrlShortenerServiceTest {
     }
 
     @Test
-    fun `getOriginalUrl should return the original URL for a valid short code`() {
+    fun `should return the original URL from a valid short code`() {
         val shortCode = "abc123"
         val originalUrl = "https://test.com"
         every { urlMappingRepository.findByShortCode(shortCode) } returns UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrl)
@@ -39,7 +40,7 @@ class UrlShortenerServiceTest {
     }
 
     @Test
-    fun `getOriginalUrl should throw NotFoundException for an invalid short code`() {
+    fun `should throw NotFoundException for an invalid short code`() {
         val shortCode = "invalid"
         every { urlMappingRepository.findByShortCode(shortCode) } returns null
 
@@ -48,5 +49,14 @@ class UrlShortenerServiceTest {
         }
         assertEquals("Short URL not found", exception.message)
         verify(exactly = 1) { urlMappingRepository.findByShortCode(shortCode) }
+    }
+
+    @Test
+    fun `should throw BadRequest for an invalid url`() {
+        val exception = assertThrows(MethodArgumentNotValidException::class.java) {
+            urlShortenerService.shortenUrl("Invalid_URL")
+        }
+        assertEquals("Validation error", exception.message)
+        verify(exactly = 1) { urlMappingRepository.save(any()) }
     }
 }
