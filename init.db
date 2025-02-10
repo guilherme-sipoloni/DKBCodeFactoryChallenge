@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS urlshortener.url_shorted_mapping (
     id SERIAL PRIMARY KEY,
     short_code VARCHAR(255) NOT NULL UNIQUE,
-    original_url TEXT NOT NULL
+    original_url TEXT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

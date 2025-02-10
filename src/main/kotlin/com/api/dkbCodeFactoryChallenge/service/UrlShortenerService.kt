@@ -1,21 +1,33 @@
 package com.api.dkbCodeFactoryChallenge.service
 
+import com.api.dkbCodeFactoryChallenge.exception.DuplicateShortCodeException
 import com.api.dkbCodeFactoryChallenge.exception.NotFoundException
 import com.api.dkbCodeFactoryChallenge.model.UrlShortedMapping
+import com.api.dkbCodeFactoryChallenge.model.request.ShortenerRequest
 import com.api.dkbCodeFactoryChallenge.repository.UrlShortedMappingRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import java.net.URI
 
 @Service
 class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMappingRepository) {
 
-    fun shortenUrl(originalUrl: String): String {
-        val originalUrlValidated = validateAndAddProtocol(originalUrl)
-        val shortCode = generateShortCode()
+    fun shortenUrl(shortenerRequest: ShortenerRequest): String {
+        val originalUrlValidated = validateAndAddProtocol(shortenerRequest.url)
+        var retries = 3
 
-        urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrlValidated))
-
-        return "http://localhost:8080/api/$shortCode"
+        do {
+            val shortCode = generateShortCode()
+            try {
+                urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrlValidated))
+                return "http://localhost:8080/api/$shortCode"
+            } catch (ex: DataIntegrityViolationException) {
+                retries--
+                if (retries == 0) {
+                    throw DuplicateShortCodeException("Failed to generate a unique short code after multiple attempts")
+                }
+            }
+        } while (true)
     }
 
     fun getOriginalUrl(shortCode: String): String {
@@ -24,7 +36,7 @@ class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMap
         return urlMapping.originalUrl
     }
 
-    private fun generateShortCode(): String {
+    fun generateShortCode(): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..6)
             .map { allowedChars.random() }

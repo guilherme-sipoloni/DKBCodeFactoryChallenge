@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "url_shorted_mapping")
@@ -17,5 +19,9 @@ data class UrlShortedMapping(
     val shortCode: String,
 
     @Column(name = "original_url", nullable = false)
-    val originalUrl: String
+    val originalUrl: String,
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    val createdAt: LocalDateTime? = null
 )

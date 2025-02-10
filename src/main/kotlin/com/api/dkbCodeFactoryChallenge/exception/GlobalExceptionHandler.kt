@@ -30,4 +30,10 @@ class GlobalExceptionHandler {
         }
         return errors
     }
+
+    @ExceptionHandler(DuplicateShortCodeException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleDuplicateShortCodeException(ex: DuplicateShortCodeException): Map<String, String> {
+        return mapOf("error" to ex.message!!)
+    }
 }

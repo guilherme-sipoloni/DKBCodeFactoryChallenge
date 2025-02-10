@@ -1,6 +1,7 @@
 package com.api.dkbCodeFactoryChallenge.controller
 
 import com.api.dkbCodeFactoryChallenge.exception.NotFoundException
+import com.api.dkbCodeFactoryChallenge.model.request.ShortenerRequest
 import com.api.dkbCodeFactoryChallenge.service.UrlShortenerService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -27,7 +28,7 @@ class UrlShortenerControllerIT {
     fun `should return a short URL for a valid request`() {
         val originalUrl = "https://test.com"
         val shortUrl = "http://localhost:8080/api/abc123"
-        every { urlShortenerService.shortenUrl(originalUrl) } returns shortUrl
+        every { urlShortenerService.shortenUrl(ShortenerRequest(url = originalUrl)) } returns shortUrl
 
         mockMvc.perform(
             post("/api/shorten")
@@ -80,6 +81,6 @@ class UrlShortenerControllerIT {
                 .content("{\"url\": \"\"}")
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.url").value("must not be blank"))
+            .andExpect(jsonPath("$.url").value("Invalid URL"))
     }
 }

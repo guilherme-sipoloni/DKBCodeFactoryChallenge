@@ -21,7 +21,7 @@ class UrlShortenerController(private val urlShortenerService: UrlShortenerServic
 
     @PostMapping("/shorten")
     fun shortenUrl(@Valid @RequestBody request: ShortenerRequest): ResponseEntity<ShortenerResponse> {
-        val shortUrl = urlShortenerService.shortenUrl(request.url)
+        val shortUrl = urlShortenerService.shortenUrl(request)
         return ResponseEntity.ok(ShortenerResponse(shortUrl))
     }
 
