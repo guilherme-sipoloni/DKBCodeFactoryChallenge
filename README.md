@@ -5,6 +5,12 @@ This is a URL shortener application built using Spring Boot and Kotlin.
 It allows users to shorten long URLs into compact, shareable links. 
 The application uses PostgreSQL as the database to store the mappings between short codes and original URLs.
 
+The short code is a 6-character random combination of letters upper case, lower case, and digits (62^6 around 56 billion possibilities)
+To handle the rare case of a duplicate short code (collision), I implemented a retry mechanism. 
+Instead of checking for duplicates before insertion, I chose to handle collisions by catching the database exception 
+and retrying with a new short code. This approach is more efficient because The probability of a collision is extremely low, 
+and It avoids the overhead of pre-validation, which would require an additional database query for every short code generation.
+
 ## Technologies Used
 - Backend: Spring Boot, Kotlin
 
@@ -103,14 +109,17 @@ Here are some improvements that I think we could do for the project:
 2. Analytics:
    - Track how many times a short URL is accessed.
 
-3. Custom Short Codes:
+3. Flyway migration:
+   -  Allow a better control of new database changes
+
+4. Custom Short Codes:
    - Allow users to specify custom short codes.
 
-4. URL Expiration:
+5. URL Expiration:
    - Add an expiration date for short URLs.
 
-5. Frontend:
+6. Frontend:
    - Build a user-friendly frontend for the application.
 
-6. Deployment:
+7. Deployment:
    - Deploy the application to a cloud platform (e.g., AWS, Google Cloud, Heroku).
