@@ -4,14 +4,16 @@ import com.api.dkbCodeFactoryChallenge.exception.NotFoundException
 import com.api.dkbCodeFactoryChallenge.model.UrlShortedMapping
 import com.api.dkbCodeFactoryChallenge.repository.UrlShortedMappingRepository
 import org.springframework.stereotype.Service
+import java.net.URI
 
 @Service
 class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMappingRepository) {
 
     fun shortenUrl(originalUrl: String): String {
+        val originalUrlValidated = validateAndAddProtocol(originalUrl)
         val shortCode = generateShortCode()
 
-        urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrl))
+        urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrlValidated))
 
         return "http://localhost:8080/api/$shortCode"
     }
@@ -27,5 +29,14 @@ class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMap
         return (1..6)
             .map { allowedChars.random() }
             .joinToString("")
+    }
+
+    private fun validateAndAddProtocol(url: String, defaultProtocol: String = "http"): String {
+        return try {
+            val uri = URI(url)
+            if (uri.scheme == null) "$defaultProtocol://$url" else url
+        } catch (e: Exception) {
+            "$defaultProtocol://$url"
+        }
     }
 }

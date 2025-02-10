@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.view.RedirectView
 import java.net.URI
 
 @RestController
@@ -25,11 +26,9 @@ class UrlShortenerController(private val urlShortenerService: UrlShortenerServic
     }
 
     @GetMapping("/{shortCode}")
-    fun redirect(@PathVariable shortCode: String): ResponseEntity<Void> {
+    fun redirect(@PathVariable shortCode: String): RedirectView {
         val originalUrl = urlShortenerService.getOriginalUrl(shortCode)
-        return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(originalUrl))
-            .build()
+        return RedirectView(originalUrl)
     }
 }
 

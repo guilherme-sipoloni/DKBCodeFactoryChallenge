@@ -80,6 +80,6 @@ class UrlShortenerControllerIT {
                 .content("{\"url\": \"\"}")
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.url").value("Invalid URL"))
+            .andExpect(jsonPath("$.url").value("must not be blank"))
     }
 }
