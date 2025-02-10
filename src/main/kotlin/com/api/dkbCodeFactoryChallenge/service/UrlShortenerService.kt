@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMappingRepository) {
 
     fun shortenUrl(originalUrl: String): String {
-        val shortCode = generateShortCode(originalUrl)
+        val shortCode = generateShortCode()
 
         urlShortedMappingRepository.save(UrlShortedMapping(shortCode = shortCode, originalUrl = originalUrl))
 
@@ -22,7 +22,7 @@ class UrlShortenerService(private val urlShortedMappingRepository: UrlShortedMap
         return urlMapping.originalUrl
     }
 
-    private fun generateShortCode(originalUrl: String): String {
+    private fun generateShortCode(): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..6)
             .map { allowedChars.random() }

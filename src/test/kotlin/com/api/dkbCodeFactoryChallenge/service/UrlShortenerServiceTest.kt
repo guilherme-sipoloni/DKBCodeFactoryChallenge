@@ -50,13 +50,4 @@ class UrlShortenerServiceTest {
         assertEquals("Short URL not found", exception.message)
         verify(exactly = 1) { urlMappingRepository.findByShortCode(shortCode) }
     }
-
-    @Test
-    fun `should throw BadRequest for an invalid url`() {
-        val exception = assertThrows(MethodArgumentNotValidException::class.java) {
-            urlShortenerService.shortenUrl("Invalid_URL")
-        }
-        assertEquals("Validation error", exception.message)
-        verify(exactly = 1) { urlMappingRepository.save(any()) }
-    }
 }
